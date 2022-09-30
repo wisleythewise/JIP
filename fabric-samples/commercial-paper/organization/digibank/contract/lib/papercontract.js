@@ -55,17 +55,8 @@ class CommercialPaperContract extends Contract {
         console.log('Instantiate the contract');
     }
 
-    /**
-     * Issue commercial paper
-     *
-     * @param {Context} ctx the transaction context
-     * @param {String} issuer commercial paper issuer
-     * @param {Integer} paperNumber paper number for this issuer
-     * @param {String} issueDateTime paper issue date
-     * @param {String} maturityDateTime paper maturity date
-     * @param {Integer} faceValue face value of paper
-    */
-    async issue(ctx, issuer, paperNumber, issueDateTime, maturityDateTime, faceValue) {
+
+    async request(ctx, issuer, paperNumber, issueDateTime, maturityDateTime, faceValue) {
 
         // create an instance of the paper
         let paper = CommercialPaper.createInstance(issuer, paperNumber, issueDateTime, maturityDateTime, parseInt(faceValue));
@@ -87,18 +78,7 @@ class CommercialPaperContract extends Contract {
         return paper;
     }
 
-    /**
-     * Buy commercial paper
-     *
-      * @param {Context} ctx the transaction context
-      * @param {String} issuer commercial paper issuer
-      * @param {Integer} paperNumber paper number for this issuer
-      * @param {String} currentOwner current owner of paper
-      * @param {String} newOwner new owner of paper
-      * @param {Integer} price price paid for this paper // transaction input - not written to asset
-      * @param {String} purchaseDateTime time paper was purchased (i.e. traded)  // transaction input - not written to asset
-     */
-    async buy(ctx, issuer, paperNumber, currentOwner, newOwner, price, purchaseDateTime) {
+    async approve(ctx, issuer, paperNumber, currentOwner, newOwner, price, purchaseDateTime) {
 
         // Retrieve the current paper using key fields provided
         let paperKey = CommercialPaper.makeKey([issuer, paperNumber]);
@@ -129,114 +109,20 @@ class CommercialPaperContract extends Contract {
         return paper;
     }
 
-    /**
-      *  Buy request:  (2-phase confirmation: Commercial paper is 'PENDING' subject to completion of transfer by owning org)
-      *  Alternative to 'buy' transaction
-      *  Note: 'buy_request' puts paper in 'PENDING' state - subject to transfer confirmation [below].
-      * 
-      * @param {Context} ctx the transaction context
-      * @param {String} issuer commercial paper issuer
-      * @param {Integer} paperNumber paper number for this issuer
-      * @param {String} currentOwner current owner of paper
-      * @param {String} newOwner new owner of paper                              // transaction input - not written to asset per se - but written to block
-      * @param {Integer} price price paid for this paper                         // transaction input - not written to asset per se - but written to block
-      * @param {String} purchaseDateTime time paper was requested                // transaction input - ditto.
-     */
-    async buy_request(ctx, issuer, paperNumber, currentOwner, newOwner, price, purchaseDateTime) {
-        
-
-        // Retrieve the current paper using key fields provided
-        let paperKey = CommercialPaper.makeKey([issuer, paperNumber]);
-        let paper = await ctx.paperList.getPaper(paperKey);
-
-        // Validate current owner - this is really information for the user trying the sample, rather than any 'authorisation' check per se FYI
-        if (paper.getOwner() !== currentOwner) {
-            throw new Error('\nPaper ' + issuer + paperNumber + ' is not owned by ' + currentOwner + ' provided as a paraneter');
-        }
-        // paper set to 'PENDING' - can only be transferred (confirmed) by identity from owning org (MSP check).
-        paper.setPending();
-
-        // Update the paper
-        await ctx.paperList.updatePaper(paper);
-        return paper;
-    }
-
-    /**
-     * transfer commercial paper: only the owning org has authority to execute. It is the complement to the 'buy_request' transaction. '[]' is optional below.
-     * eg. issue -> buy_request -> transfer -> [buy ...n | [buy_request...n | transfer ...n] ] -> redeem
-     * this transaction 'pair' is an alternative to the straight issue -> buy -> [buy....n] -> redeem ...path
-     *
-     * @param {Context} ctx the transaction context
-     * @param {String} issuer commercial paper issuer
-     * @param {Integer} paperNumber paper number for this issuer
-     * @param {String} newOwner new owner of paper
-     * @param {String} newOwnerMSP  MSP id of the transferee
-     * @param {String} confirmDateTime  confirmed transfer date.
-    */
-    async transfer(ctx, issuer, paperNumber, newOwner, newOwnerMSP, confirmDateTime) {
-
-        // Retrieve the current paper using key fields provided
-        let paperKey = CommercialPaper.makeKey([issuer, paperNumber]);
-        let paper = await ctx.paperList.getPaper(paperKey);
-
-        // Validate current owner's MSP in the paper === invoking transferor's MSP id - can only transfer if you are the owning org.
-
-        if (paper.getOwnerMSP() !== ctx.clientIdentity.getMSPID()) {
-            throw new Error('\nPaper ' + issuer + paperNumber + ' is not owned by the current invoking Organisation, and not authorised to transfer');
-        }
-
-        // Paper needs to be 'pending' - which means you need to have run 'buy_pending' transaction first.
-        if ( ! paper.isPending()) {
-            throw new Error('\nPaper ' + issuer + paperNumber + ' is not currently in state: PENDING for transfer to occur: \n must run buy_request transaction first');
-        }
-        // else all good
-
-        paper.setOwner(newOwner);
-        // set the MSP of the transferee (so that, that org may also pass MSP check, if subsequently transferred/sold on)
-        paper.setOwnerMSP(newOwnerMSP);
-        paper.setTrading();
-        paper.confirmDateTime = confirmDateTime;
-
-        // Update the paper
-        await ctx.paperList.updatePaper(paper);
-        return paper;
-    }
-
-    /**
-     * Redeem commercial paper
-     *
-     * @param {Context} ctx the transaction context
-     * @param {String} issuer commercial paper issuer
-     * @param {Integer} paperNumber paper number for this issuer
-     * @param {String} redeemingOwner redeeming owner of paper
-     * @param {String} issuingOwnerMSP the MSP of the org that the paper will be redeemed with.
-     * @param {String} redeemDateTime time paper was redeemed
-    */
-    async redeem(ctx, issuer, paperNumber, redeemingOwner, issuingOwnerMSP, redeemDateTime) {
+    async loc(ctx, issuer, paperNumber, approved_Institute, issuingOwnerMSP, redeemDateTime) {
 
         let paperKey = CommercialPaper.makeKey([issuer, paperNumber]);
 
         let paper = await ctx.paperList.getPaper(paperKey);
 
-        // Check paper is not alread in a state of REDEEMED
-        if (paper.isRedeemed()) {
-            throw new Error('\nPaper ' + issuer + paperNumber + ' has already been redeemed');
-        }
-
-        // Validate current redeemer's MSP matches the invoking redeemer's MSP id - can only redeem if you are the owning org.
-
-        if (paper.getOwnerMSP() !== ctx.clientIdentity.getMSPID()) {
-            throw new Error('\nPaper ' + issuer + paperNumber + ' cannot be redeemed by ' + ctx.clientIdentity.getMSPID() + ', as it is not the authorised owning Organisation');
-        }
+        // Here all the checks can be placed
 
         // As this is just a sample, can show additional verification check: that the redeemer provided matches that on record, before redeeming it
-        if (paper.getOwner() === redeemingOwner) {
-            paper.setOwner(paper.getIssuer());
-            paper.setOwnerMSP(issuingOwnerMSP);
+        if (paper.getOwner() === approved_Institute) {
             paper.setRedeemed();
             paper.redeemDateTime = redeemDateTime; // record redemption date against the asset (the complement to 'issue date')
         } else {
-            throw new Error('\nRedeeming owner: ' + redeemingOwner + ' organisation does not currently own paper: ' + issuer + paperNumber);
+            throw new Error('\nRedeeming owner: ' + approved_Institute + ' organisation does not currently own paper: ' + issuer + paperNumber);
         }
 
         await ctx.paperList.updatePaper(paper);

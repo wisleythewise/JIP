@@ -67,7 +67,7 @@ app.post('/request', async function (req, res){
         // issue commercial paper
         console.log('Submit commercial paper issue transaction.');
 
-        const issueResponse = await contract.submitTransaction('issue', 'MagnetoCorp', docNumber.toString(), current_today, price.toString(), amount.toString());
+        const issueResponse = await contract.submitTransaction('request', 'MagnetoCorp', docNumber.toString(), current_today, price.toString(), amount.toString());
 
         // process response
         console.log('Process issue transaction response.'+issueResponse);
@@ -147,10 +147,6 @@ app.get('/query', async function (req, res) {
         let queryResponse = await contract.evaluateTransaction('queryHistory', 'MagnetoCorp', '00001');
 
         let json = JSON.parse(queryResponse.toString());
-        console.log(json);
-        console.log('\n\n');
-        console.log('\n  History query complete.');
-        console.log('-----------------------------------------------------------------------------------------\n\n');
 
         // 2 ownership query
         console.log('2. Query Commercial Paper Ownership.... Papers owned by MagnetoCorp');
@@ -271,7 +267,7 @@ app.post('/approve', async function (req, res) {
         // buy commercial paper
         console.log('Submit commercial paper buy transaction.');
 
-        const buyResponse = await contract.submitTransaction('buy', 'MagnetoCorp', docNumber.toString(), 'MagnetoCorp', 'DigiBank', price.toString(), amount.toString());
+        const buyResponse = await contract.submitTransaction('approve', 'MagnetoCorp', docNumber.toString(), 'MagnetoCorp', 'DigiBank', price.toString(), amount.toString());
 
         // process response
         console.log('Process buy transaction response.');
@@ -353,7 +349,7 @@ app.post('/LoC', async function (req, res) {
         // redeem commercial paper
         console.log('Submit commercial paper redeem transaction.');
 
-        const redeemResponse = await contract.submitTransaction('redeem', 'MagnetoCorp', docNumber.toString(), 'DigiBank', 'Org2MSP', current_today.toString());
+        const redeemResponse = await contract.submitTransaction('loc', 'MagnetoCorp', docNumber.toString(), 'DigiBank', 'Org2MSP', current_today.toString());
 
         // process response
         console.log('Process redeem transaction response.');
