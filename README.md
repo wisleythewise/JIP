@@ -6,7 +6,8 @@ Welcome to this repository, in here you will find a prototype that was requested
 For this repository to fully function please install all the prerequisites listed [here](https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html) and [here](https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html) when everything is installed replace the fabric-samples folder in the freshly installed directory with this fabric-sample folder. This folder will become the base of the network <br>
 
 ## Setting up the network
-Setting op the network is time consuming. Please use the commands below to make sure everything is set up correctly.
+Setting op the network is time consuming. Please use the commands below to make sure everything is set up correctly. The network is based on the provided commercial-paper network provided inside the samples. If you want to read more about this configuration please check the docs our [here](https://github.com/hyperledger/fabric-samples/tree/main/commercial-paper). We have added a new peer to the network, three applications, a single server, and bussines logic.
+
 
     cd fabric-samples/test-network
     ./network.sh down
