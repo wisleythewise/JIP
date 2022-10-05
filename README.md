@@ -1,6 +1,6 @@
 # JIP
 ## Introduction
-Welcome to this repository, in here you will find a prototype that was requested to be build by Linkthings. The supplier of the backbone of this repository is the git of [hyperledger](https://github.com/hyperledger/fabric-samples). For more information about the backbone please read the [docs](https://hyperledger-fabric.readthedocs.io/en/latest/).  <br>
+Welcome to this repository, in here you will find a prototype that was requested to be build by Linkthings. In order to examine the technical feasability of implemeting a blockchain in the trade finance world. The supplier of the backbone of this repository is the git of [hyperledger](https://github.com/hyperledger/fabric-samples).For more information about the backbone please read the [docs](https://hyperledger-fabric.readthedocs.io/en/latest/).  <br>
 
 ## Prerequisites
 For this repository to fully function please install all the prerequisites listed [here](https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html) and [here](https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html) when everything is installed replace the fabric-samples folder in the freshly installed directory with this fabric-sample folder. This folder will become the base of the network <br>
@@ -104,7 +104,6 @@ Setting op the network is time consuming. Please use the commands below to make 
 
 
 ### Navigate to the bank terminal 
-
     npm install
 
 
@@ -112,12 +111,17 @@ Setting op the network is time consuming. Please use the commands below to make 
     cd application
     npm install
     node addToWallet.js
-    node server.js          //Make sure the right ip is configured
+    node server.js  //Make sure the right ip is configured
+         
+
 
 ### Open a new terminal
-cd ../../linkthings
-npm start                   //Make sure the right ip is configured
+    cd ../../linkthings
+    npm start                   //Make sure the right ip is configured
+    npm install
 
+### Caveat
+We are reusing the CA identy of digibank application for in the bank application. This is because the server which has been developed for visualizing the blockchian is running locally on my computer, and due to time contraints it was more efficient to reuse a CA, because genreating and implementing a new CA would not be an economic decision regarding our grade, due to the fact that it was already out of scope for the project.  
 
 <h1>Everything should be working now</h1>
 
