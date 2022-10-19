@@ -167,7 +167,7 @@ Setting op the network is time consuming. Please use the commands below to make 
 
 
 ### Open a new terminal
-    cd ../../linkthings
+    cd ../../Simple-Dashboard-UI
     npm start                   //Make sure the right ip is configured
     npm install
 
