@@ -70,7 +70,7 @@ Setting op the network is time consuming. Please use the commands below to make 
     ./addOrg3.sh up -c mychannel -ca
 
 ### Open a new terminal
-    cd organization/magnetocorp
+    cd ../../commercial-paper/organization/magnetocorp
     . ./magnetocorp.sh
 
 ### Open a new terminal
