@@ -167,9 +167,10 @@ Setting op the network is time consuming. Please use the commands below to make 
 
 
 ### Open a new terminal
-    cd ../../Simple-Dashboard-UI
-    npm start                   //Make sure the right ip is configured
+    cd ../Simple-Dashboard-UI
     npm install
+    npm start                   
+   
 
 ### Caveat
 We are reusing the CA identy of digibank application for in the bank application. This is because the server which has been developed for visualizing the blockchian is running locally on my computer, and due to time contraints it was more efficient to reuse a CA, because genreating and implementing a new CA would not be an economic decision regarding our grade, due to the fact that it was already out of scope for the project.  
