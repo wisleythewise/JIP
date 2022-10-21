@@ -72,7 +72,7 @@ export default function data(queryBlock) {
        return reponse
    }
  
-   const bussinessLogic = () =>{
+   const bussinessLogic = async () =>{
  
     
  
@@ -87,8 +87,8 @@ export default function data(queryBlock) {
          const price = parseInt(approvedRequestSeller[i].Record.price);
          const docNumber = parseInt(approvedRequestSeller[i].Record.paperNumber);
  
-         if(amount > 100 && amount/price < 10){
-           turnIntoLoc(docNumber)
+         if( (amount > 100 && amount/price < 10 ) && (!keyLoCs.includes(approvedRequestSeller[i].Record.paperNumber)) ){
+           await turnIntoLoc(docNumber)
            console.log(`Turn Order #${docNumber} into a LoC`)
          }
          
@@ -98,13 +98,15 @@ export default function data(queryBlock) {
        return
    }
 
+   console.log("This is the context: ", context)
 
   if (context == "bank"){
     console.log("looking for LoC viable options")
-    var interval = setInterval(bussinessLogic, 20000);
+    bussinessLogic()
+    
   } else {
     console.log("killing interval")
-    clearInterval(interval)
+    
   }
    
   const Job = ({ title, description }) => (
@@ -158,7 +160,7 @@ export default function data(queryBlock) {
 
     var outstandingRequestMapped = outstandingRequest.map((key) => ({
     Order: <Job title="#" description={key.Record.paperNumber} />,
-    Specs: <Job title={`Amount in Kg's: ${key.Record.paperNumber}`} description={`Price in Euros: ${key.Record.price}`}/>,
+    Specs: <Job title={`Amount in Kg's: ${key.Record.amount}`} description={`Price in Euros: ${key.Record.price}`}/>,
     Status: (
       <MDBox ml={-1}>
         <MDBadge badgeContent={status[0]} color="error" variant="gradient" size="sm" />
@@ -194,7 +196,7 @@ export default function data(queryBlock) {
     var approvedRequestSellerMapped = approvedRequestSeller.filter((key) => (!keyLoCs.includes(key.Record.paperNumber))  ).map((key) => ({
     
     Order: <Job title="#" description={key.Record.paperNumber} />,
-    Specs: <Job title={`Amount in Kg's: ${key.Record.paperNumber}`} description={`Price in Euros: ${key.Record.price}`}/>,
+    Specs: <Job title={`Amount in Kg's: ${key.Record.amount}`} description={`Price in Euros: ${key.Record.price}`}/>,
     Status: (
       <MDBox ml={-1}>
         <MDBadge badgeContent={status[1]} color="info" variant="gradient" size="sm" />
@@ -224,7 +226,7 @@ export default function data(queryBlock) {
     var LoCsMapped = LoCs.map((key) => ({
     
     Order: <Job title="#" description={key.Record.paperNumber} />,
-    Specs: <Job title={`Amount in Kg's: ${key.Record.paperNumber}`} description={`Price in Euros: ${key.Record.price}`}/>,
+    Specs: <Job title={`Amount in Kg's: ${key.Record.amount}`} description={`Price in Euros: ${key.Record.price}`}/>,
     Status: (
       <MDBox ml={-1}>
         <MDBadge badgeContent={status[2]} color="success" variant="gradient" size="sm" />

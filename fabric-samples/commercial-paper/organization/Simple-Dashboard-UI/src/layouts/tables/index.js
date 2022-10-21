@@ -71,7 +71,7 @@ function Tables() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Importer/Buyer
+                  Transactions
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>

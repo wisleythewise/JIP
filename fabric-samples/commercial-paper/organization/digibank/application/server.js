@@ -178,7 +178,7 @@ app.get('/query', async function (req, res) {
 
 
         // 4 Named query - all redeemed papers
-        console.log('4. Named Query: ... All papers in org.papernet.papers that are in current state of redeemed');
+        console.log('4. Named Query: ... All papers in org.papernet.papers that are in current state of LoC');
         console.log('-----------------------------------------------------------------------------------------\n');
         let queryResponse4 = await contract.evaluateTransaction('queryNamed', 'redeemed');
 
@@ -186,7 +186,7 @@ app.get('/query', async function (req, res) {
         console.log(json);
         console.log('\n\n');
 
-        console.log('\n  Named query "redeemed" complete.');
+        console.log('\n  Named query "LoC" complete.');
         console.log('-----------------------------------------------------------------------------------------\n\n');
 
         res.status(200).json({Outstanding_requests_buyer: queryResponse2.toString(),
@@ -265,7 +265,7 @@ app.post('/approve', async function (req, res) {
         const contract = await network.getContract('papercontract', 'org.papernet.commercialpaper');
 
         // buy commercial paper
-        console.log('Submit commercial paper buy transaction.');
+        console.log('Submit commercial paper apporove transaction.');
 
         const buyResponse = await contract.submitTransaction('approve', 'MagnetoCorp', docNumber.toString(), 'MagnetoCorp', 'DigiBank', price.toString(), amount.toString());
 
@@ -352,7 +352,7 @@ app.post('/LoC', async function (req, res) {
         const redeemResponse = await contract.submitTransaction('loc', 'MagnetoCorp', docNumber.toString(), 'DigiBank', 'Org2MSP', current_today.toString());
 
         // process response
-        console.log('Process redeem transaction response.');
+        console.log('Process LoC transaction response.');
 
         let paper = CommercialPaper.fromBuffer(redeemResponse);
 
